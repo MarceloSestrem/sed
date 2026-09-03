@@ -114,10 +114,69 @@ namespace SED {
     // SUBCATEGORIA: MATEMÁTICA
     // ==========================================
 
+    /**
+     * Arredonda um número para a quantidade desejada de casas decimais
+     */
+    //% subcategory="Matemática"
+    //% blockId=sed_arredondar_casas
+    //% block="arredondar %valor para %casas casas decimais"
+    //% valor.defl=3.14159
+    //% casas.defl=2
+    //% weight=100
+    export function arredondarCasas(valor: number, casas: number): number {
+        let fator = Math.pow(10, Math.max(0, casas));
+        return Math.round(valor * fator) / fator;
+    }
+
+    /**
+     * Multiplica três valores
+     */
+    //% subcategory="Matemática"
+    //% blockId=sed_multiplicar_tres
+    //% block="multiplicar %a × %b × %c"
+    //% a.defl=1
+    //% b.defl=1
+    //% c.defl=1
+    //% inlineInputMode=inline
+    //% weight=90
+    export function multiplicarTres(a: number, b: number, c: number): number {
+        return a * b * c;
+    }
+
+    /**
+     * Soma três valores
+     */
+    //% subcategory="Matemática"
+    //% blockId=sed_somar_tres
+    //% block="somar %a + %b + %c"
+    //% a.defl=0
+    //% b.defl=0
+    //% c.defl=0
+    //% inlineInputMode=inline
+    //% weight=80
+    export function somarTres(a: number, b: number, c: number): number {
+        return a + b + c;
+    }
+
+    /**
+     * Subtrai três valores em sequência (a - b - c)
+     */
+    //% subcategory="Matemática"
+    //% blockId=sed_subtrair_tres
+    //% block="subtrair %a - %b - %c"
+    //% a.defl=0
+    //% b.defl=0
+    //% c.defl=0
+    //% inlineInputMode=inline
+    //% weight=70
+    export function subtrairTres(a: number, b: number, c: number): number {
+        return a - b - c;
+    }
+
     //% subcategory="Matemática"
     //% blockId=sed_somar
     //% block="%a + %b"
-    //% weight=100
+    //% weight=60
     export function somar(a: number, b: number): number {
         return a + b;
     }
@@ -125,7 +184,7 @@ namespace SED {
     //% subcategory="Matemática"
     //% blockId=sed_subtrair
     //% block="%a - %b"
-    //% weight=99
+    //% weight=59
     export function subtrair(a: number, b: number): number {
         return a - b;
     }
@@ -133,7 +192,7 @@ namespace SED {
     //% subcategory="Matemática"
     //% blockId=sed_multiplicar
     //% block="%a × %b"
-    //% weight=98
+    //% weight=58
     export function multiplicar(a: number, b: number): number {
         return a * b;
     }
@@ -141,7 +200,7 @@ namespace SED {
     //% subcategory="Matemática"
     //% blockId=sed_dividir
     //% block="%a ÷ %b"
-    //% weight=97
+    //% weight=57
     export function dividir(a: number, b: number): number {
         if (b == 0) return 0;
         return a / b;
@@ -150,7 +209,7 @@ namespace SED {
     //% subcategory="Matemática"
     //% blockId=sed_mapear
     //% block="mapear valor %val de [ %fromLow , %fromHigh ] para [ %toLow , %toHigh ]"
-    //% weight=96
+    //% weight=56
     export function mapear(val: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
         return Math.map(val, fromLow, fromHigh, toLow, toHigh);
     }
