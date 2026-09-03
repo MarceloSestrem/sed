@@ -479,6 +479,11 @@ namespace SED {
     // ==========================================
     // SUBCATEGORIA: MOTORES
     // ==========================================
+    /**
+        * Execute one motor at the same time
+        * @param motor First Motor; eg: M1A, M1B, M2A, M2B
+        * @param speed [-255-255] speed of motor; eg: 150, -150
+       */
 
 
     //% subcategory="Motores"
@@ -504,6 +509,13 @@ namespace SED {
             setPwm(pn, 0, -speed);
         }
     }
+    /**
+       * Execute two motors at the same time
+       * @param motor First Motor; eg: M1A, M1B
+       * @param speed1 [-255-255] speed of motor; eg: 150, -150
+       * @param motor Second Motor; eg: M2A, M2B
+       * @param speed2 [-255-255] speed of motor; eg: 150, -150
+      */
 
 
     //% subcategory="Motores"
@@ -516,6 +528,13 @@ namespace SED {
         MotorRun(motor1, speed1);
         MotorRun(motor2, speed2);
     }
+    /**
+       * Execute two motors at the same time
+       * @param motor First Motor; eg: M1A, M1B
+       * @param speed1 [-255-255] speed of motor; eg: 150, -150
+       * @param motor Second Motor; eg: M2A, M2B
+       * @param speed2 [-255-255] speed of motor; eg: 150, -150
+      */
 
 
     //% subcategory="Motores"
@@ -531,6 +550,13 @@ namespace SED {
         MotorRun(motor1, 0);
         MotorRun(motor2, 0);
     }
+    /**
+       * Execute two motors at the same time
+       * @param motor First Motor; eg: M1A, M1B
+       * @param speed1 [-255-255] speed of motor; eg: 150, -150
+       * @param motor Second Motor; eg: M2A, M2B
+       * @param speed2 [-255-255] speed of motor; eg: 150, -150
+      */
 
 
     //% subcategory="Motores"
@@ -543,6 +569,13 @@ namespace SED {
         basic.pause(delay * 1000);
         MotorRun(index, 0);
     }
+    /**
+       * Execute two motors at the same time
+       * @param motor First Motor; eg: M1A, M1B
+       * @param speed1 [-255-255] speed of motor; eg: 150, -150
+       * @param motor Second Motor; eg: M2A, M2B
+       * @param speed2 [-255-255] speed of motor; eg: 150, -150
+      */
 
 
     //% subcategory="Motores"
@@ -594,7 +627,11 @@ namespace SED {
     let ultrasonicState: UltrasonicDevice;
 
 
-
+    /**    
+   * @param trig trig pin selection enumeration, eg:DigitalPin.P12
+           * @param echo echo pin selection enumeration, eg:DigitalPin.P13
+           * @param unit unit of distance, eg: DistanceUnit.CM
+           */
 
 
 
@@ -621,6 +658,11 @@ namespace SED {
             default: return d;
         }
     }
+    /** 
+   * @param trig trig pin selection enumeration, eg:DigitalPin.P12
+           * @param echo echo pin selection enumeration, eg:DigitalPin.P13
+           * @param unit unit of distance, eg: DistanceUnit.CM
+           */
 
 
     //% subcategory="Ultrassônico"
