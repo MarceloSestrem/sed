@@ -1,12 +1,15 @@
-//% color="#000080" icon="\uf1ec" block="SED"
+//% color="#000080" icon="\uf1ec" block="SED Joinville"
 namespace SED {
 
+
     // --- ENUMERAÇÕES ---
+
 
     export enum Leds {
         ON = 1,
         OFF = 2
     }
+
 
     export enum Sensor {
         Esquerdo = 1,
@@ -14,12 +17,14 @@ namespace SED {
         Direito = 3
     }
 
+
     export enum Um_sensor {
         //% block="▮"
         branco = 1,
         //% block="▯"
         preto = 2
     }
+
 
     export enum Dois_sensores {
         //% block="▮▮"
@@ -31,6 +36,7 @@ namespace SED {
         //% block="▯▯"
         preto_preto = 4
     }
+
 
     export enum Tres_sensores {
         //% block="▮▮▮"
@@ -51,6 +57,7 @@ namespace SED {
         preto_preto_preto = 8
     }
 
+
     export enum PingUnit {
         //% block="cm"
         cm,
@@ -60,12 +67,14 @@ namespace SED {
         MicroSeconds
     }
 
+
     export enum DistanceUnit {
         //% block="cm"
         cm = 58,
         //% block="polegadas"
         inch = 148
     }
+
 
     export enum Color {
         //% block="Vermelho"
@@ -77,6 +86,7 @@ namespace SED {
         //% block="Transparente"
         Clear
     }
+
 
     export enum ColorList {
         //% block="Vermelho"
@@ -95,6 +105,7 @@ namespace SED {
         white
     }
 
+
     export enum GasList {
         //% block="CO"
         Co,
@@ -105,6 +116,7 @@ namespace SED {
         //% block="Álcool"
         Alcohol
     }
+
 
     export enum Servos {
         S1 = 0x01,
@@ -117,6 +129,7 @@ namespace SED {
         S8 = 0x08
     }
 
+
     export enum Motors {
         M1A = 0x1,
         M1B = 0x2,
@@ -124,15 +137,18 @@ namespace SED {
         M2B = 0x4
     }
 
+
     export enum Steppers {
         M1 = 0x1,
         M2 = 0x2
     }
 
+
     export enum SonarVersion {
         V1 = 0x1,
         V2 = 0x2
     }
+
 
     export enum Turns {
         //% blockId="T1B4" block="1/4"
@@ -151,12 +167,14 @@ namespace SED {
         T5B0 = 1800
     }
 
+
     export enum ValueUnit {
         //% block="mm"
         Millimetros,
         //% block="cm"
         Centimetros
     }
+
 
     export enum LcdPosition1602 {
         Pos1 = 1, Pos2 = 2, Pos3 = 3, Pos4 = 4, Pos5 = 5,
@@ -167,6 +185,7 @@ namespace SED {
         Pos26 = 26, Pos27 = 27, Pos28 = 28, Pos29 = 29, Pos30 = 30,
         Pos31 = 31, Pos32 = 32
     }
+
 
     export enum LcdPosition2004 {
         Pos1 = 1, Pos2 = 2, Pos3 = 3, Pos4 = 4, Pos5 = 5,
@@ -187,6 +206,7 @@ namespace SED {
         Pos76 = 76, Pos77 = 77, Pos78 = 78, Pos79 = 79, Pos80 = 80
     }
 
+
     export enum LcdBacklight {
         //% block="desligada"
         Off = 0,
@@ -194,12 +214,14 @@ namespace SED {
         On = 8
     }
 
+
     export enum TextAlignment {
         //% block="alinhado à esquerda"
         Left,
         //% block="alinhado à direita"
         Right
     }
+
 
     export enum TextOption {
         //% block="alinhar à esquerda"
@@ -210,7 +232,9 @@ namespace SED {
         PadWithZeros
     }
 
+
     // --- CONSTANTES INTERNAS E VARIÁVEIS ---
+
 
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -228,6 +252,7 @@ namespace SED {
     const ALL_LED_OFF_L = 0xFC
     const ALL_LED_OFF_H = 0xFD
 
+
     const STP_CHA_L = 2047
     const STP_CHA_H = 4095
     const STP_CHB_L = 1
@@ -236,6 +261,7 @@ namespace SED {
     const STP_CHC_H = 3071
     const STP_CHD_L = 3071
     const STP_CHD_H = 1023
+
 
     const HT16K33_ADDRESS = 0x70
     const HT16K33_BLINK_CMD = 0x80
@@ -246,10 +272,12 @@ namespace SED {
     const HT16K33_BLINK_HALFHZ = 3
     const HT16K33_CMD_BRIGHTNESS = 0xE0
 
+
     let initialized = false
     let initializedMatrix = false
     let matBuf = pins.createBuffer(17);
     let distanceBuf = 0;
+
 
     function i2cwrite(addr: number, reg: number, value: number) {
         let buf = pins.createBuffer(2)
@@ -258,17 +286,20 @@ namespace SED {
         pins.i2cWriteBuffer(addr, buf)
     }
 
+
     function i2ccmd(addr: number, value: number) {
         let buf = pins.createBuffer(1)
         buf[0] = value
         pins.i2cWriteBuffer(addr, buf)
     }
 
+
     function i2cread(addr: number, reg: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         return val;
     }
+
 
     function initPCA9685(): void {
         i2cwrite(PCA9685_ADDRESS, MODE1, 0x00)
@@ -278,6 +309,7 @@ namespace SED {
         }
         initialized = true
     }
+
 
     function setFreq(freq: number): void {
         let prescaleval = 25000000;
@@ -294,6 +326,7 @@ namespace SED {
         i2cwrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1);
     }
 
+
     function setPwm(channel: number, on: number, off: number): void {
         if (channel < 0 || channel > 15) return;
         let buf = pins.createBuffer(5);
@@ -304,6 +337,7 @@ namespace SED {
         buf[4] = (off >> 8) & 0xff;
         pins.i2cWriteBuffer(PCA9685_ADDRESS, buf);
     }
+
 
     function setStepper(index: number, dir: boolean): void {
         if (index == 1) {
@@ -333,10 +367,12 @@ namespace SED {
         }
     }
 
+
     function stopMotor(index: number) {
         setPwm((index - 1) * 2, 0, 0);
         setPwm((index - 1) * 2 + 1, 0, 0);
     }
+
 
     function matrixInit() {
         i2ccmd(HT16K33_ADDRESS, 0x21);
@@ -344,14 +380,17 @@ namespace SED {
         i2ccmd(HT16K33_ADDRESS, HT16K33_CMD_BRIGHTNESS | 0xF);
     }
 
+
     function matrixShow() {
         matBuf[0] = 0x00;
         pins.i2cWriteBuffer(HT16K33_ADDRESS, matBuf);
     }
 
+
     // ==========================================
     // SUBCATEGORIA: MATEMÁTICA
     // ==========================================
+
 
     //% subcategory="Matemática"
     //% blockId=sed_arredondar_casas
@@ -363,6 +402,7 @@ namespace SED {
         return Math.round(valor * fator) / fator;
     }
 
+
     //% subcategory="Matemática"
     //% blockId=sed_multiplicar_tres
     //% block="multiplicar %a × %b × %c"
@@ -371,6 +411,7 @@ namespace SED {
     export function multiplicarTres(a: number, b: number, c: number): number {
         return a * b * c;
     }
+
 
     //% subcategory="Matemática"
     //% blockId=sed_somar_tres
@@ -381,6 +422,7 @@ namespace SED {
         return a + b + c;
     }
 
+
     //% subcategory="Matemática"
     //% blockId=sed_subtrair_tres
     //% block="subtrair %a - %b - %c"
@@ -390,12 +432,14 @@ namespace SED {
         return a - b - c;
     }
 
+
     //% subcategory="Matemática"
     //% blockId=sed_somar block="%a + %b"
     //% weight=60 color=#000080
     export function somar(a: number, b: number): number {
         return a + b;
     }
+
 
     //% subcategory="Matemática"
     //% blockId=sed_subtrair block="%a - %b"
@@ -404,12 +448,14 @@ namespace SED {
         return a - b;
     }
 
+
     //% subcategory="Matemática"
     //% blockId=sed_multiplicar block="%a × %b"
     //% weight=58 color=#000080
     export function multiplicar(a: number, b: number): number {
         return a * b;
     }
+
 
     //% subcategory="Matemática"
     //% blockId=sed_dividir block="%a ÷ %b"
@@ -419,17 +465,21 @@ namespace SED {
         return a / b;
     }
 
+
     //% subcategory="Matemática"
     //% blockId=sed_mapear
+    //% inlineInputMode=inline
     //% block="mapear valor %val de [ %fromLow , %fromHigh ] para [ %toLow , %toHigh ]"
     //% weight=56 color=#000080
     export function mapear(val: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
         return Math.map(val, fromLow, fromHigh, toLow, toHigh);
     }
 
+
     // ==========================================
     // SUBCATEGORIA: MOTORES
     // ==========================================
+
 
     //% subcategory="Motores"
     //% blockId=robotbit_motor_run block="Motor|%index|velocidade %speed"
@@ -455,6 +505,7 @@ namespace SED {
         }
     }
 
+
     //% subcategory="Motores"
     //% blockId=robotbit_motor_dual block="Motores|%motor1|velocidade %speed1|%motor2|velocidade %speed2"
     //% group="Motores" weight=58 color=#000080
@@ -465,6 +516,7 @@ namespace SED {
         MotorRun(motor1, speed1);
         MotorRun(motor2, speed2);
     }
+
 
     //% subcategory="Motores"
     //% blockId=robotbit_motor_dual_DELAY block="Motores com delay |%motor1|velocidade %speed1|%motor2|velocidade %speed2 espera(em seg.) %delay"
@@ -480,6 +532,7 @@ namespace SED {
         MotorRun(motor2, 0);
     }
 
+
     //% subcategory="Motores"
     //% blockId=robotbit_motor_rundelay block="Motor|%index|velocidade %speed|espera %delay|s"
     //% group="Motores" weight=57 color=#000080
@@ -491,12 +544,14 @@ namespace SED {
         MotorRun(index, 0);
     }
 
+
     //% subcategory="Motores"
     //% blockId=robotbit_stop block="Parar Motor|%index|"
     //% group="Motores" weight=56 color=#000080
     export function MotorStop(index: Motors): void {
         MotorRun(index, 0);
     }
+
 
     //% subcategory="Motores"
     //% blockId=robotbit_stop_all block="Parando todos os motores"
@@ -511,18 +566,22 @@ namespace SED {
         }
     }
 
+
     // ==========================================
     // SUBCATEGORIA: ULTRASSÔNICO
     // ==========================================
+
 
     const MICROBIT_LABCODE_ULTRASONIC_OBJECT_DETECTED_ID = 798;
     const MAX_ULTRASONIC_TRAVEL_TIME = 300 * DistanceUnit.cm;
     const ULTRASONIC_MEASUREMENTS = 3;
 
+
     interface UltrasonicRoundTrip {
         ts: number;
         rtt: number;
     }
+
 
     interface UltrasonicDevice {
         trig: DigitalPin | undefined;
@@ -531,56 +590,17 @@ namespace SED {
         travelTimeObservers: number[];
     }
 
+
     let ultrasonicState: UltrasonicDevice;
 
-    //% subcategory="Ultrassônico"
-    //% blockId=sed_ultrasonic_distance 
-    //% block="medidor de distância ultrassônico pino |%name| distância em %Unit"
-    //% color=#000080
-    export function Ultrasonic(name: DigitalPin, Unit: DistanceUnit): number {
-        let duration = 0;
-        let RangeInCentimeters = 0;
 
-        pins.digitalWritePin(name, 0);
-        control.waitMicros(2);
-        pins.digitalWritePin(name, 1);
-        control.waitMicros(10);
-        pins.digitalWritePin(name, 0);
 
-        duration = pins.pulseIn(name, PulseValue.High, 50000);
-        RangeInCentimeters = duration / 29 / 2;
 
-        if (Unit == DistanceUnit.cm)
-            return Math.round(RangeInCentimeters);
-        else
-            return Math.round(RangeInCentimeters / 2.54);
-    }
 
-    //% subcategory="Ultrassônico"
-    //% blockId=sed_ultrasonic_v2_distance 
-    //% block="(v2) medidor de distância ultrassônico pino |%name| distância em %Unit"
-    //% color=#000080
-    export function UltrasonicV2(name: DigitalPin, Unit: DistanceUnit): number {
-        let duration2 = 0;
-        let RangeInCentimeters2 = 0;
-
-        pins.digitalWritePin(name, 0);
-        control.waitMicros(2);
-        pins.digitalWritePin(name, 1);
-        control.waitMicros(10);
-        pins.digitalWritePin(name, 0);
-
-        duration2 = pins.pulseIn(name, PulseValue.High, 25000);
-        RangeInCentimeters2 = duration2 * 153 / 29 / 2 / 100;
-
-        if (Unit == DistanceUnit.cm)
-            return Math.round(RangeInCentimeters2);
-        else
-            return Math.round(RangeInCentimeters2 / 2.54);
-    }
 
     //% subcategory="Ultrassônico"
     //% blockId=sed_ping 
+    //% inlineInputMode=inline
     //% block="(HC-SR04) ultrassom pino |trig %trig|echo %echo|unidade %unit"
     //% color=#000080
     export function ping(trig: DigitalPin, echo: DigitalPin, unit: PingUnit, maxCmDistance = 500): number {
@@ -591,7 +611,9 @@ namespace SED {
         control.waitMicros(10);
         pins.digitalWritePin(trig, 0);
 
+
         const d = pins.pulseIn(echo, PulseValue.High, maxCmDistance * 58);
+
 
         switch (unit) {
             case PingUnit.cm: return Math.idiv(d, 58);
@@ -599,6 +621,7 @@ namespace SED {
             default: return d;
         }
     }
+
 
     //% subcategory="Ultrassônico"
     //% group="Ultrassônico versão compacta"
@@ -629,6 +652,7 @@ namespace SED {
         return Math.round(data);
     }
 
+
     //% subcategory="Ultrassônico"
     //% group="Ultrassônico"
     //% blockId="labcode_ultrasonico_connectado"
@@ -638,6 +662,7 @@ namespace SED {
     //% weight=80 color=#000080
     export function connectUltrasonicDistanceSensor(trig: DigitalPin, echo: DigitalPin): void {
         if (ultrasonicState && ultrasonicState.trig) return;
+
 
         if (!ultrasonicState) {
             ultrasonicState = {
@@ -649,6 +674,7 @@ namespace SED {
         } else {
             ultrasonicState.trig = trig;
         }
+
 
         pins.onPulsed(echo, PulseValue.High, () => {
             if (
@@ -662,8 +688,10 @@ namespace SED {
             }
         });
 
+
         control.inBackground(measureInBackground);
     }
+
 
     //% subcategory="Ultrassônico"
     //% group="Ultrassônico"
@@ -672,6 +700,7 @@ namespace SED {
     //% weight=69 color=#000080
     export function onUltrasonicObjectDetected(distance: number, unit: DistanceUnit, handler: () => void) {
         if (distance <= 0) return;
+
 
         if (!ultrasonicState) {
             ultrasonicState = {
@@ -682,8 +711,10 @@ namespace SED {
             };
         }
 
+
         const travelTimeThreshold = Math.imul(distance, unit);
         ultrasonicState.travelTimeObservers.push(travelTimeThreshold);
+
 
         control.onEvent(
             MICROBIT_LABCODE_ULTRASONIC_OBJECT_DETECTED_ID,
@@ -693,6 +724,7 @@ namespace SED {
             }
         );
     }
+
 
     //% subcategory="Ultrassônico"
     //% group="Ultrassônico"
@@ -705,6 +737,7 @@ namespace SED {
         return Math.idiv(ultrasonicState.medianRoundTrip, unit);
     }
 
+
     //% subcategory="Ultrassônico"
     //% group="Ultrassônico"
     //% blockId="labcode_ultrasonic_less_than"
@@ -716,32 +749,39 @@ namespace SED {
         return Math.idiv(ultrasonicState.medianRoundTrip, unit) < distance;
     }
 
+
     function triggerPulse() {
         pins.setPull(ultrasonicState.trig, PinPullMode.PullNone);
         pins.digitalWritePin(ultrasonicState.trig, 0);
         control.waitMicros(2);
+
 
         pins.digitalWritePin(ultrasonicState.trig, 1);
         control.waitMicros(10);
         pins.digitalWritePin(ultrasonicState.trig, 0);
     }
 
+
     function getMedianRRT(roundTrips: UltrasonicRoundTrip[]) {
         const roundTripTimes = roundTrips.map((urt) => urt.rtt);
         return median(roundTripTimes);
     }
+
 
     function median(values: number[]) {
         values.sort((a, b) => a - b);
         return values[(values.length - 1) >> 1];
     }
 
+
     function measureInBackground() {
         const trips = ultrasonicState.roundTrips;
         const TIME_BETWEEN_PULSE_MS = 145;
 
+
         while (true) {
             const now = input.runningTime();
+
 
             if (trips[trips.length - 1].ts < now - TIME_BETWEEN_PULSE_MS - 10) {
                 ultrasonicState.roundTrips.push({
@@ -750,11 +790,14 @@ namespace SED {
                 });
             }
 
+
             while (trips.length > ULTRASONIC_MEASUREMENTS) {
                 trips.shift();
             }
 
+
             ultrasonicState.medianRoundTrip = getMedianRRT(ultrasonicState.roundTrips);
+
 
             for (let i = 0; i < ultrasonicState.travelTimeObservers.length; i++) {
                 const threshold = ultrasonicState.travelTimeObservers[i];
@@ -772,14 +815,17 @@ namespace SED {
                 }
             }
 
+
             triggerPulse();
             basic.pause(TIME_BETWEEN_PULSE_MS);
         }
     }
 
+
     // ==========================================
     // SUBCATEGORIA: SEGUIDOR DE LINHA
     // ==========================================
+
 
     //% subcategory="Seguidor de Linha"
     //% blockId=sed_line_finder 
@@ -793,6 +839,7 @@ namespace SED {
         }
     }
 
+
     //% subcategory="Seguidor de Linha"
     //% block="sensor Digital de Linha |%Sensor| pino |%pin|"
     //% group="Sensores de linha" color=#000080
@@ -804,6 +851,7 @@ namespace SED {
         }
     }
 
+
     //% subcategory="Seguidor de Linha"
     //% block="Sensor Analógico de Linha |%Sensor| pino |%pin|"
     //% group="Sensores de linha" color=#000080
@@ -814,6 +862,7 @@ namespace SED {
             return -1;
         }
     }
+
 
     //% subcategory="Seguidor de Linha"
     //% blockId="umsensor" block="Detecção do sensor de linha Digital (p1) %Umsensor"
@@ -827,12 +876,14 @@ namespace SED {
         return true;
     }
 
+
     //% subcategory="Seguidor de Linha"
     //% blockId="doissensores" block="Detecção dos sensores(P1 e P2) de linha Digital %Doissensores"
     //% group="Sensores de linha V.2( pinos: P0,  P1 e ou  P2 Cores: Branco: ▮ e Preto: ▯)" color=#000080
     export function readDois(dois: Dois_sensores): boolean {
         let p1 = pins.digitalReadPin(DigitalPin.P1);
         let p2 = pins.digitalReadPin(DigitalPin.P2);
+
 
         if (dois == Dois_sensores.branco_branco) return p1 == 0 && p2 == 0;
         if (dois == Dois_sensores.branco_preto) return p1 == 0 && p2 == 1;
@@ -841,6 +892,7 @@ namespace SED {
         return true;
     }
 
+
     //% subcategory="Seguidor de Linha"
     //% blockId="tresssensores" block="Detecção dos sensores de linha Digital %Tressensores"
     //% group="Sensores de linha V.2( pinos: P0,  P1 e ou  P2 Cores: Branco: ▮ e Preto: ▯)" color=#000080
@@ -848,6 +900,7 @@ namespace SED {
         let p0 = pins.digitalReadPin(DigitalPin.P0);
         let p1 = pins.digitalReadPin(DigitalPin.P1);
         let p2 = pins.digitalReadPin(DigitalPin.P2);
+
 
         if (tres == Tres_sensores.branco_branco_branco) return p0 == 0 && p1 == 0 && p2 == 0;
         if (tres == Tres_sensores.branco_branco_preto) return p0 == 0 && p1 == 0 && p2 == 1;
@@ -860,6 +913,7 @@ namespace SED {
         return true;
     }
 
+
     //% subcategory="Seguidor de Linha"
     //% blockId="umasensor" block="Detecção do sensor de linha Analógica (P1) %Umsensor | Média = %m"
     //% group="Sensores de linha V.2( pinos: P0,  P1 e ou  P2 Cores: Branco: ▮ e Preto: ▯)"
@@ -871,6 +925,7 @@ namespace SED {
         return true;
     }
 
+
     //% subcategory="Seguidor de Linha"
     //% blockId="doissensoresa" block="Detecção dos sensores(P1 e P2) de linha Analógica %Doissensores | Média = %m"
     //% group="Sensores de linha V.2( pinos: P0,  P1 e ou  P2 Cores: Branco: ▮ e Preto: ▯)"
@@ -879,12 +934,14 @@ namespace SED {
         let p1 = pins.analogReadPin(AnalogPin.P1);
         let p2 = pins.analogReadPin(AnalogPin.P2);
 
+
         if (doisa == Dois_sensores.branco_branco) return p1 < m && p2 < m;
         if (doisa == Dois_sensores.branco_preto) return p1 < m && p2 > m;
         if (doisa == Dois_sensores.preto_branco) return p1 > m && p2 < m;
         if (doisa == Dois_sensores.preto_preto) return p1 > m && p2 > m;
         return true;
     }
+
 
     //% subcategory="Seguidor de Linha"
     //% blockId="tresssensoresa" block="Detecção dos sensores de linha Analógica %Tressensores| Média = %m"
@@ -894,6 +951,7 @@ namespace SED {
         let p0 = pins.analogReadPin(AnalogPin.P0);
         let p1 = pins.analogReadPin(AnalogPin.P1);
         let p2 = pins.analogReadPin(AnalogPin.P2);
+
 
         if (tresa == Tres_sensores.branco_branco_branco) return p0 < m && p1 < m && p2 < m;
         if (tresa == Tres_sensores.branco_branco_preto) return p0 < m && p1 < m && p2 > m;
@@ -906,6 +964,7 @@ namespace SED {
         return true;
     }
 
+
     //% subcategory="Seguidor de Linha"
     //% blockId="doissensoresam" block="Detecção dos sensores(P1 e P2) de linha Analógica %Doissensores | Média 1 = %m1| Média 2 = %m2"
     //% group="Sensores de linha V.2( pinos: P0,  P1 e ou  P2 Cores: Branco: ▮ e Preto: ▯)"
@@ -914,6 +973,7 @@ namespace SED {
         let p1 = pins.analogReadPin(AnalogPin.P1);
         let p2 = pins.analogReadPin(AnalogPin.P2);
 
+
         if (doisa == Dois_sensores.branco_branco) return p1 < m1 && p2 < m2;
         if (doisa == Dois_sensores.branco_preto) return p1 < m1 && p2 > m2;
         if (doisa == Dois_sensores.preto_branco) return p1 > m1 && p2 < m2;
@@ -921,9 +981,11 @@ namespace SED {
         return true;
     }
 
+
     // ==========================================
     // SUBCATEGORIA: SENSORES DIGITAIS
     // ==========================================
+
 
     //% subcategory="Sensores Digitais"
     //% blockId=sed_collision 
@@ -933,6 +995,7 @@ namespace SED {
         return pins.digitalReadPin(pin) == 0;
     }
 
+
     //% subcategory="Sensores Digitais"
     //% blockId=sed_water 
     //% block="sensor de água pino |%pin| detecta água"
@@ -940,6 +1003,7 @@ namespace SED {
     export function waterSensor(pin: DigitalPin): boolean {
         return pins.digitalReadPin(pin) == 1;
     }
+
 
     //% subcategory="Sensores Digitais"
     //% blockId=sed_magnetic 
@@ -949,6 +1013,7 @@ namespace SED {
         return pins.digitalReadPin(pin) == 0;
     }
 
+
     //% subcategory="Sensores Digitais"
     //% blockId=sed_hall 
     //% block="sensor hall pino |%pin| ativado"
@@ -956,6 +1021,7 @@ namespace SED {
     export function hallSensor(pin: DigitalPin): boolean {
         return pins.digitalReadPin(pin) == 0;
     }
+
 
     //% subcategory="Sensores Digitais"
     //% blockId=sed_crash 
@@ -965,6 +1031,7 @@ namespace SED {
         return pins.digitalReadPin(pin) == 0;
     }
 
+
     //% subcategory="Sensores Digitais"
     //% blockId=sed_flame 
     //% block="sensor de chama pino |%pin| detecta fogo"
@@ -972,6 +1039,7 @@ namespace SED {
     export function flameSensor(pin: DigitalPin): boolean {
         return pins.digitalReadPin(pin) == 0;
     }
+
 
     //% subcategory="Sensores Digitais"
     //% blockId=sed_touch 
@@ -981,6 +1049,7 @@ namespace SED {
         return pins.digitalReadPin(pin) == 1;
     }
 
+
     //% subcategory="Sensores Digitais"
     //% blockId=sed_vibration 
     //% block="sensor de vibração pino |%pin| detecta vibração"
@@ -988,6 +1057,7 @@ namespace SED {
     export function vibrationSensor(pin: DigitalPin): boolean {
         return pins.digitalReadPin(pin) == 1;
     }
+
 
     //% subcategory="Sensores Digitais"
     //% blockId=sed_pir 
@@ -997,9 +1067,11 @@ namespace SED {
         return pins.digitalReadPin(pin) == 1;
     }
 
+
     // ==========================================
     // SUBCATEGORIA: SENSORES ANALÓGICOS
     // ==========================================
+
 
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_raindrop 
@@ -1012,6 +1084,7 @@ namespace SED {
         return Math.round(rain);
     }
 
+
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_capacitivesoilhumidity 
     //% block="valor da umidade do solo (0~100) no pino %capacitivesoilhumiditypin. Intervalo (leitura) min|%vmin| máx|%vmax|"
@@ -1023,6 +1096,7 @@ namespace SED {
         return Math.round(humidity);
     }
 
+
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_soilhumidity 
     //% block="valor da umidade do solo (0~100) no pino %soilhumiditypin"
@@ -1032,6 +1106,7 @@ namespace SED {
         let humidity2 = Math.map(value3, 0, 1000, 0, 100);
         return Math.round(humidity2);
     }
+
 
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_lightintensity 
@@ -1043,6 +1118,7 @@ namespace SED {
         return Math.round(light);
     }
 
+
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_uvlevel 
     //% block="sensor UV (0~15) no pino %uvlevelpin"
@@ -1052,6 +1128,7 @@ namespace SED {
         let uv = Math.map(value5, 0, 1023, 0, 15);
         return Math.round(uv);
     }
+
 
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_temperature 
@@ -1066,6 +1143,7 @@ namespace SED {
         return Math.round(temperature);
     }
 
+
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_gas 
     //% block="sensor de gás %sensor no pino %gaspin valor de concentração"
@@ -1075,6 +1153,7 @@ namespace SED {
         let gas = Math.map(value7, 0, 1023, 0, 100);
         return Math.round(gas);
     }
+
 
     //% subcategory="Sensores Analógicos"
     //% blockId=sed_noise 
@@ -1086,9 +1165,11 @@ namespace SED {
         return Math.round(noise);
     }
 
+
     // ==========================================
     // SUBCATEGORIA: COR E GESTOS (I2C)
     // ==========================================
+
 
     //% subcategory="Cor e Gestos"
     //% blockId=sed_colorsensor 
@@ -1098,6 +1179,7 @@ namespace SED {
         return false;
     }
 
+
     //% subcategory="Cor e Gestos"
     //% blockId=sed_apds9960_hue 
     //% block="APDS9960 obter matiz da cor HUE (0~360)"
@@ -1105,6 +1187,7 @@ namespace SED {
     export function getHue(): number {
         return 0;
     }
+
 
     //% subcategory="Cor e Gestos"
     //% blockId=sed_apds9960_check_color 
@@ -1132,11 +1215,14 @@ namespace SED {
         }
     }
 
+
     // ==========================================
     // SUBCATEGORIA: LCD DISPLAY
     // ==========================================
 
+
     const enum Lcd { Command = 0, Data = 1 }
+
 
     interface LcdState {
         i2cAddress: uint8;
@@ -1148,7 +1234,9 @@ namespace SED {
         refreshIntervalId: number;
     }
 
+
     let lcdState: LcdState = undefined;
+
 
     function connect(): boolean {
         if (0 != pins.i2cReadNumber(39, NumberFormat.Int8LE, false)) {
@@ -1159,6 +1247,7 @@ namespace SED {
         return !!lcdState;
     }
 
+
     function write4bits(value: number) {
         if (!lcdState && !connect()) return;
         pins.i2cWriteNumber(lcdState.i2cAddress, value, NumberFormat.Int8LE);
@@ -1168,6 +1257,7 @@ namespace SED {
         control.waitMicros(50);
     }
 
+
     function send(RS_bit: number, payload: number) {
         if (!lcdState) return;
         const highnib = payload & 0xf0;
@@ -1176,13 +1266,16 @@ namespace SED {
         write4bits(lownib | lcdState.backlight | RS_bit);
     }
 
+
     function sendCommand(command: number) { send(Lcd.Command, command); }
     function sendData(data: number) { send(Lcd.Data, data); }
+
 
     function setCursor(line: number, column: number) {
         const offsets = [0x00, 0x40, 0x14, 0x54];
         sendCommand(0x80 | (offsets[line] + column));
     }
+
 
     function updateCharacterBuffer(
         text: string,
@@ -1195,14 +1288,17 @@ namespace SED {
     ): void {
         if (!lcdState && !connect()) return;
 
+
         if (!lcdState.refreshIntervalId) {
             lcdState.refreshIntervalId = control.setInterval(refreshDisplay, 500, control.IntervalMode.Timeout);
         }
+
 
         if (lcdState.columns === 0) {
             lcdState.columns = columns;
             lcdState.rows = rows;
             lcdState.characters = pins.createBuffer(lcdState.rows * lcdState.columns);
+
 
             const whitespace = "x".charCodeAt(0);
             for (let pos = 0; pos < lcdState.rows * lcdState.columns; pos++) {
@@ -1211,7 +1307,9 @@ namespace SED {
             updateCharacterBuffer("", 0, lcdState.columns * lcdState.rows, lcdState.columns, lcdState.rows, TextAlignment.Left, " ");
         }
 
+
         if (columns !== lcdState.columns || rows !== lcdState.rows) return;
+
 
         const fillCharacter = pad.length > 0 ? pad.charCodeAt(0) : " ".charCodeAt(0);
         let endPosition = offset + length;
@@ -1219,6 +1317,7 @@ namespace SED {
             endPosition = lcdState.columns * lcdState.rows;
         }
         let lcdPos = offset;
+
 
         if (alignment == TextAlignment.Right) {
             while (lcdPos < endPosition - text.length) {
@@ -1230,6 +1329,7 @@ namespace SED {
             }
         }
 
+
         let textPosition = 0;
         while (lcdPos < endPosition && textPosition < text.length) {
             if (lcdState.characters[lcdPos] != text.charCodeAt(textPosition)) {
@@ -1240,6 +1340,7 @@ namespace SED {
             textPosition++;
         }
 
+
         while (lcdPos < endPosition) {
             if (lcdState.characters[lcdPos] != fillCharacter) {
                 lcdState.characters[lcdPos] = fillCharacter;
@@ -1249,12 +1350,14 @@ namespace SED {
         }
     }
 
+
     function sendLine(line: number): void {
         setCursor(line, 0);
         for (let position = lcdState.columns * line; position < lcdState.columns * (line + 1); position++) {
             sendData(lcdState.characters[position]);
         }
     }
+
 
     function refreshDisplay() {
         if (!lcdState) return;
@@ -1267,13 +1370,16 @@ namespace SED {
         }
     }
 
+
     function toAlignment(option?: TextOption): TextAlignment {
         return (option === TextOption.AlignRight || option === TextOption.PadWithZeros) ? TextAlignment.Right : TextAlignment.Left;
     }
 
+
     function toPad(option?: TextOption): string {
         return option === TextOption.PadWithZeros ? "0" : " ";
     }
+
 
     //% subcategory="LCD"
     //% blockId="sed_lcd_show_string_on_1602"
@@ -1287,12 +1393,14 @@ namespace SED {
         updateCharacterBuffer(text, startPosition - 1, length, 16, 2, toAlignment(option), toPad(option));
     }
 
+
     //% subcategory="LCD"
     //% blockId="sed_lcd_clear_1602" block="LCD1602 limpar tela"
     //% weight=89 color=#000080
     export function clearLcd1602(): void {
         showStringOnLcd1602("", 1, 32);
     }
+
 
     //% subcategory="LCD"
     //% blockId="sed_lcd_show_string_on_2004"
@@ -1306,12 +1414,14 @@ namespace SED {
         updateCharacterBuffer(text, startPosition - 1, length, 20, 4, toAlignment(option), toPad(option));
     }
 
+
     //% subcategory="LCD"
     //% blockId="sed_lcd_clear_2004" block="LCD2004 limpar tela"
     //% weight=79 color=#000080
     export function clearLcd2004(): void {
         showStringOnLcd2004("", 1, 80);
     }
+
 
     //% subcategory="LCD"
     //% blockId=sed_lcd_position_1602
@@ -1323,6 +1433,7 @@ namespace SED {
         return pos;
     }
 
+
     //% subcategory="LCD"
     //% blockId=sed_lcd_position_2004
     //% block="%pos"
@@ -1332,6 +1443,7 @@ namespace SED {
     export function position2004(pos: LcdPosition2004): number {
         return pos;
     }
+
 
     //% subcategory="LCD"
     //% blockId="sed_lcd_backlight" block="alternar luz de fundo do LCD %backlight"
@@ -1344,6 +1456,7 @@ namespace SED {
         send(Lcd.Command, 0);
     }
 
+
     //% subcategory="LCD"
     //% blockId="sed_lcd_set_address" block="conectar LCD no endereço I2C %i2cAddress"
     //% i2cAddress.min=0 i2cAddress.max=127
@@ -1352,10 +1465,12 @@ namespace SED {
         if (lcdState && lcdState.i2cAddress == i2cAddress) return;
         if (0 === pins.i2cReadNumber(i2cAddress, NumberFormat.Int8LE, false)) return;
 
+
         if (lcdState && lcdState.refreshIntervalId) {
             control.clearInterval(lcdState.refreshIntervalId, control.IntervalMode.Timeout);
             lcdState.refreshIntervalId = undefined;
         }
+
 
         lcdState = {
             i2cAddress: i2cAddress,
@@ -1367,9 +1482,11 @@ namespace SED {
             refreshIntervalId: undefined,
         };
 
+
         basic.pause(50);
         pins.i2cWriteNumber(lcdState.i2cAddress, lcdState.backlight, NumberFormat.Int8LE);
         basic.pause(50);
+
 
         write4bits(0x30);
         control.waitMicros(4100);
@@ -1380,6 +1497,7 @@ namespace SED {
         write4bits(0x20);
         control.waitMicros(1000);
 
+
         send(Lcd.Command, 0x20 | 0x00 | 0x08 | 0x00);
         control.waitMicros(1000);
         send(Lcd.Command, 0x08 | 0x04 | 0x00 | 0x00);
@@ -1387,6 +1505,7 @@ namespace SED {
         send(Lcd.Command, 0x04 | 0x02 | 0x00);
         control.waitMicros(1000);
     }
+
 
     //% subcategory="LCD"
     //% blockId="sed_lcd_is_connected" block="LCD está conectado"
