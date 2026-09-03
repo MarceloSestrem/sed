@@ -529,14 +529,11 @@ namespace SED {
         MotorRun(motor2, speed2);
     }
     /**
-       * Execute two motors at the same time
-       * @param motor First Motor; eg: M1A, M1B
-       * @param speed1 [-255-255] speed of motor; eg: 150, -150
-       * @param motor Second Motor; eg: M2A, M2B
-       * @param speed2 [-255-255] speed of motor; eg: 150, -150
-      */
-
-
+     * Execute motores únicos com atraso
+     * @param index Motor Index; eg: M1A, M1B, M2A, M2B
+     * @param speed [-255-255] speed of motor; eg: 150, -150
+     * @param delay seconde delay to stop; eg: 1
+    */
     //% subcategory="Motores"
     //% blockId=robotbit_motor_dual_DELAY block="Motores com delay |%motor1|velocidade %speed1|%motor2|velocidade %speed2 espera(em seg.) %delay"
     //% group="Motores" weight=62 color=#000080
@@ -569,14 +566,6 @@ namespace SED {
         basic.pause(delay * 1000);
         MotorRun(index, 0);
     }
-    /**
-       * Execute two motors at the same time
-       * @param motor First Motor; eg: M1A, M1B
-       * @param speed1 [-255-255] speed of motor; eg: 150, -150
-       * @param motor Second Motor; eg: M2A, M2B
-       * @param speed2 [-255-255] speed of motor; eg: 150, -150
-      */
-
 
     //% subcategory="Motores"
     //% blockId=robotbit_stop block="Parar Motor|%index|"
@@ -733,6 +722,12 @@ namespace SED {
 
         control.inBackground(measureInBackground);
     }
+    /**
+        * Faça algo quando um objeto for detectado pela primeira vez dentro de um intervalo especificado.
+        * @param distance distance to object, eg: 20
+        * @param unit unit of distance, eg: DistanceUnit.CM
+        * @param handler body code to run when the event is raised
+        */
 
 
     //% subcategory="Ultrassônico"
@@ -766,6 +761,12 @@ namespace SED {
             }
         );
     }
+    /**
+        * Faça algo quando um objeto for detectado pela primeira vez dentro de um intervalo especificado.
+        * @param distance distance to object, eg: 20
+        * @param unit unit of distance, eg: DistanceUnit.CM
+        * @param handler body code to run when the event is raised
+        */
 
 
     //% subcategory="Ultrassônico"
