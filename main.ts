@@ -1558,34 +1558,4 @@ namespace SED {
     export function isLcdConnected(): boolean {
         return !!lcdState || connect();
     }
-    /**
-     * Bloco expansível em linha que aceita textos e números
-     */
-    //% subcategory="TEXTO"
-
-
-    //% block="juntar %txt1 com %txt2 || e %txt3 e %txt4"
-    //% txt1.defl="Texto 1"
-    //% txt2.defl="Texto 2"
-    //% txt3.defl="Texto 3"
-    //% txt4.defl="Texto 4"
-    //% inlineInputMode=inline
-    //% subcategory="Texto"
-    //% weight=80
-    export function juntarVariosTextos(txt1: any, txt2: any, txt3?: any, txt4?: any): string {
-        let str1 = txt1 !== undefined ? "" + txt1 : "";
-        let str2 = txt2 !== undefined ? "" + txt2 : "";
-        let resultado = str1 + " " + str2;
-
-
-        if (txt3 !== undefined) {
-            resultado += " " + txt3;
-        }
-        if (txt4 !== undefined) {
-            resultado += " " + txt4;
-        }
-
-
-        return resultado;
-    }
 }
